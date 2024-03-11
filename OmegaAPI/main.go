@@ -14,6 +14,23 @@ var token string
 func main() {
 	rOmega := gin.Default()
 
+	authMiddleware := func(c *gin.Context) {
+		header := c.GetHeader("Authorization")
+		headerParts := strings.Split(header, " ")
+		if len(headerParts) != 2 || headerParts[1] != token {
+			c.JSON(http.StatusBadRequest, models.Response{
+				Results: nil,
+				Error: &models.Error{
+					Code:    -100,
+					Message: "internal server error",
+				},
+				Success: false,
+			})
+			c.Abort()
+			return
+		}
+	}
+
 	rOmega.POST("/api/Authorization/login", func(c *gin.Context) {
 		var loginData models.RequestLogin
 		if err := c.ShouldBindJSON(&loginData); err != nil {
@@ -21,10 +38,8 @@ func main() {
 			return
 		}
 
-		// Auth logic
 		if loginData.Username == "test" && loginData.Password == "test@123" {
-			token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyNiIsImp0aSI6IjlhYjQ2NzJhLTE3ZWYtNGNkYy04MTc4LWE1NjNiMWFjNzEzMSIsImlhdCI6IjYvNi8yMDIyIDU6MTE6MDQgQU0iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93c"
-
+			token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 			c.JSON(http.StatusOK, models.Response{
 				Results: &models.Results{
 					ResultLogin: &models.ResultLogin{
@@ -49,16 +64,9 @@ func main() {
 		}
 	})
 
-	rOmega.POST("/api/Authorization/check", func(c *gin.Context) {
-		var req models.RequestCheck
-		err := c.ShouldBindJSON(&req)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		header := c.GetHeader("Authorization")
-		headerParts := strings.Split(header, " ")
-		if headerParts[1] == token {
+	secured := rOmega.Group("/api/Authorization", authMiddleware)
+	{
+		secured.POST("/check", func(c *gin.Context) {
 			c.JSON(http.StatusOK, models.Response{
 				Results: &models.Results{
 					ResultCheck: &models.ResultCheck{
@@ -80,28 +88,9 @@ func main() {
 				Error:   nil,
 				Success: true,
 			})
-		} else {
-			c.JSON(http.StatusBadRequest, models.Response{
-				Results: nil,
-				Error: &models.Error{
-					Code:    -100,
-					Message: "internal server error",
-				},
-				Success: false,
-			})
-		}
-	})
+		})
 
-	rOmega.POST("/api/Authorization/pay", func(c *gin.Context) {
-		var req models.TransactionNumber
-		err := c.ShouldBindJSON(&req)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		header := c.GetHeader("Authorization")
-		headerParts := strings.Split(header, " ")
-		if headerParts[1] == token {
+		secured.POST("/pay", func(c *gin.Context) {
 			c.JSON(http.StatusOK, models.Response{
 				Results: &models.Results{
 					ResultPay: &models.ResultPay{
@@ -117,28 +106,9 @@ func main() {
 				Error:   nil,
 				Success: true,
 			})
-		} else {
-			c.JSON(http.StatusBadRequest, models.Response{
-				Results: nil,
-				Error: &models.Error{
-					Code:    -100,
-					Message: "internal server error",
-				},
-				Success: false,
-			})
-		}
-	})
+		})
 
-	rOmega.POST("/api/Authorization/get-status", func(c *gin.Context) {
-		var req models.TransactionNumber
-		err := c.ShouldBindJSON(&req)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		header := c.GetHeader("Authorization")
-		headerParts := strings.Split(header, " ")
-		if headerParts[1] == token {
+		secured.POST("/get-status", func(c *gin.Context) {
 			c.JSON(http.StatusOK, models.Response{
 				Results: &models.Results{
 					ResultGetStatus: &models.ResultGetStatus{
@@ -153,28 +123,9 @@ func main() {
 				Error:   nil,
 				Success: true,
 			})
-		} else {
-			c.JSON(http.StatusBadRequest, models.Response{
-				Results: nil,
-				Error: &models.Error{
-					Code:    -100,
-					Message: "internal server error",
-				},
-				Success: false,
-			})
-		}
-	})
+		})
 
-	rOmega.POST("/api/Authorization/reverse", func(c *gin.Context) {
-		var req models.TransactionNumber
-		err := c.ShouldBindJSON(&req)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		header := c.GetHeader("Authorization")
-		headerParts := strings.Split(header, " ")
-		if headerParts[1] == token {
+		secured.POST("/reverse", func(c *gin.Context) {
 			c.JSON(http.StatusOK, models.Response{
 				Results: &models.Results{
 					ResultReverse: &models.ResultReverse{
@@ -190,28 +141,9 @@ func main() {
 				Error:   nil,
 				Success: true,
 			})
-		} else {
-			c.JSON(http.StatusBadRequest, models.Response{
-				Results: nil,
-				Error: &models.Error{
-					Code:    -100,
-					Message: "internal server error",
-				},
-				Success: false,
-			})
-		}
-	})
+		})
 
-	rOmega.POST("/api/Authorization/p2pinfowrap", func(c *gin.Context) {
-		var req models.CardNumber
-		err := c.ShouldBindJSON(&req)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		header := c.GetHeader("Authorization")
-		headerParts := strings.Split(header, " ")
-		if headerParts[1] == token {
+		secured.POST("/p2pinfowrap", func(c *gin.Context) {
 			c.JSON(http.StatusOK, models.Response{
 				Results: &models.Results{
 					ResultP2pinfowrap: &models.ResultP2pinfowrap{
@@ -222,17 +154,8 @@ func main() {
 				Error:   nil,
 				Success: true,
 			})
-		} else {
-			c.JSON(http.StatusBadRequest, models.Response{
-				Results: nil,
-				Error: &models.Error{
-					Code:    -100,
-					Message: "internal server error",
-				},
-				Success: false,
-			})
-		}
-	})
+		})
+	}
 
 	log.Println("Starting server on port 8081...")
 	err := rOmega.Run(":8081")
