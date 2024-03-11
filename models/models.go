@@ -23,12 +23,12 @@ type Error struct {
 
 // Results структура для хранения всех Result
 type Results struct {
-	ResultLogin       *ResultLogin       `json:"resultLogin,omitempty"`
-	ResultCheck       *ResultCheck       `json:"resultCheck,omitempty"`
-	ResultPay         *ResultPay         `json:"resultPay,omitempty"`
-	ResultGetStatus   *ResultGetStatus   `json:"resultGetStatus,omitempty"`
-	ResultReverse     *ResultReverse     `json:"resultReverse,omitempty"`
-	ResultP2pinfowrap *ResultP2pinfowrap `json:"resultP2Pinfowrap,omitempty"`
+	*ResultLogin
+	*ResultCheck
+	*ResultPay
+	*ResultGetStatus
+	*ResultReverse
+	*ResultP2pinfowrap
 }
 
 // ResultLogin структура для хранения содержания ответа на /login

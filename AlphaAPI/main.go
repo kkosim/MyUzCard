@@ -39,7 +39,6 @@ func main() {
 
 	routes := []string{"/check", "/pay", "/get-status", "/reverse", "/p2pinfowrap"}
 	for _, route := range routes {
-		route := route
 		rAlpha.POST(route, func(c *gin.Context) {
 			var req interface{}
 
@@ -54,6 +53,7 @@ func main() {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send data to Omega"})
 				return
 			}
+			fmt.Println(&response)
 			c.JSON(http.StatusOK, response)
 		})
 	}
@@ -103,6 +103,6 @@ func sendRequestToOmega(endpoint string, data interface{}) (models.Response, err
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
 		return models.Response{}, err
 	}
-
+	fmt.Println(&response)
 	return response, nil
 }
