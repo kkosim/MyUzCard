@@ -15,13 +15,13 @@ type Response struct {
 	Success bool     `json:"success"`
 }
 
-// Error структура храненния вывода ошибок
+// Error структура для хранения вывода ошибок
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
-// Results структура хранения всех Result
+// Results структура для хранения всех Result
 type Results struct {
 	ResultLogin       *ResultLogin       `json:"resultLogin,omitempty"`
 	ResultCheck       *ResultCheck       `json:"resultCheck,omitempty"`
@@ -31,7 +31,7 @@ type Results struct {
 	ResultP2pinfowrap *ResultP2pinfowrap `json:"resultP2Pinfowrap,omitempty"`
 }
 
-// ResultLogin структура хранения содержания ответа на /login
+// ResultLogin структура для хранения содержания ответа на /login
 type ResultLogin struct {
 	Token      string `json:"token"`
 	UserID     int64  `json:"userId"`
@@ -39,12 +39,14 @@ type ResultLogin struct {
 	RoleID     int64  `json:"roleId"`
 }
 
+// CurrencyInfo структура для хранения информации о валюте
 type CurrencyInfo struct {
 	From string  `json:"from"`
 	To   string  `json:"to"`
 	Rate float64 `json:"rate"`
 }
 
+// ResultCheck структура для хранения содержания ответа на /check
 type ResultCheck struct {
 	TransactionNumber string        `json:"transactionNumber"`
 	State             int           `json:"state"`
@@ -57,6 +59,7 @@ type ResultCheck struct {
 	CurrencyInfo      *CurrencyInfo `json:"currencyInfo"`
 }
 
+// SenderDocument структура для хранения информации о документе отправителя
 type SenderDocument struct {
 	Nationality string `json:"nationality"`
 	DocType     string `json:"docType"`
@@ -66,6 +69,7 @@ type SenderDocument struct {
 	BirthDate   string `json:"birthDate"`
 }
 
+// Sender структура для хранения информации об отправителе
 type Sender struct {
 	CardNumber     string          `json:"cardNumber"`
 	CardIssuer     string          `json:"cardIssuer"`
@@ -73,6 +77,7 @@ type Sender struct {
 	SenderDocument *SenderDocument `json:"senderDocument"`
 }
 
+// RequestCheck структура для хранения запроса на /check
 type RequestCheck struct {
 	Amount                   float64 `json:"amount"`
 	CardNumber               string  `json:"cardNumber"`
@@ -86,6 +91,7 @@ type RequestCheck struct {
 	Sender                   *Sender `json:"sender"`
 }
 
+// ResultPay структура для хранения содержания ответа на /pay
 type ResultPay struct {
 	TransactionNumber string  `json:"transactionNumber"`
 	State             int     `json:"state"`
@@ -96,10 +102,12 @@ type ResultPay struct {
 	CommissionAmount  float64 `json:"commissionAmount"`
 }
 
+// TransactionNumber структура для хранения номера транзакции
 type TransactionNumber struct {
 	TransactionNumber string `json:"transactionNumber"`
 }
 
+// ResultGetStatus структура для хранения содержания ответа на /get-status
 type ResultGetStatus struct {
 	State            int     `json:"state"`
 	CreatedDate      string  `json:"createdDate"`
@@ -109,6 +117,7 @@ type ResultGetStatus struct {
 	CommissionAmount float64 `json:"commissionAmount"`
 }
 
+// ResultReverse структура для хранения содержания ответа на /reverse
 type ResultReverse struct {
 	State            int       `json:"state"`
 	CreatedDate      string    `json:"createdDate"`
@@ -119,10 +128,12 @@ type ResultReverse struct {
 	ReverseDate      time.Time `json:"reverseDate"`
 }
 
+// CardNumber структура для хранения номера карты
 type CardNumber struct {
 	CardNumber string `json:"cardNumber"`
 }
 
+// ResultP2pinfowrap структура для хранения информации о карте
 type ResultP2pinfowrap struct {
 	CardHolder string `json:"cardHolder"`
 	BankName   string `json:"bankName"`
