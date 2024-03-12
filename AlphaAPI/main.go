@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,10 @@ func main() {
 			return
 		}
 		token = response.Results.ResultLogin.Token
+		//response, err = checkToken(response, credentials)
+		//if err != nil {
+		//	log.Println("Something went wrong while checking token")
+		//}
 		c.JSON(http.StatusOK, response)
 
 	})
@@ -105,4 +110,44 @@ func sendRequestToOmega(endpoint string, data interface{}) (models.Response, err
 	}
 	fmt.Println(&response)
 	return response, nil
+}
+
+func checkToken(resp models.Response, creds models.RequestLogin) (models.Response, error) {
+	response := models.Response{
+		Results: &models.Results{
+			ResultLogin: &models.ResultLogin{
+				Token:      resp.Results.ResultLogin.Token,
+				UserID:     resp.Results.ResultLogin.UserID,
+				ExpireDate: resp.Results.ResultLogin.ExpireDate,
+				RoleID:     resp.Results.ResultLogin.RoleID,
+			},
+		},
+	}
+	expireTime, err := time.Parse(time.RFC3339, response.Results.ResultLogin.ExpireDate)
+	if err != nil {
+		//c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при парсинге даты истечения токена"})
+		return models.Response{}, err
+	}
+
+	currentTime := time.Now().UTC()
+	//timeRemaining := expireTime.Sub(currentTime)
+
+	// Запуск таймера на обновление токена за 30 секунд до истечения
+	refreshTime := expireTime.Add(-30 * time.Second)
+	refreshTimer := time.NewTimer(refreshTime.Sub(currentTime))
+
+	go func() {
+		<-refreshTimer.C
+		if time.Now().UTC().Before(expireTime) {
+			// При приближении к концу срока хранения токена отправляем запрос на обновление
+			response, err = sendRequestToOmega("/api/Authorization/login", creds)
+			if err != nil {
+				log.Println("couldn't send login to omega")
+			}
+			log.Println("Токен обновлен")
+		}
+	}()
+	return response, nil
+
+	//c.JSON(http.StatusOK, gin.H{"token": result.Token, "expire_date": result.ExpireDate, "time_remaining": timeRemaining.String()})
 }
